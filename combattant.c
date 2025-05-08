@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "combattant.h"
-#include "utilitaire.h"  // pour tirageAleatoire()
+#include "utilitaire.h" // pour tirageAleatoire()
+#include "technique.h"
 
 // Affiche les informations d’un combattant
 void afficherCombattant(Combattant *c) {
