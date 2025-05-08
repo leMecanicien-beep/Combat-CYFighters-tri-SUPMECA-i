@@ -10,29 +10,22 @@ void afficherCombattant(Combattant *c) {
     afficherTechnique(&c->technique);  // On affiche aussi sa technique
 }
 
-// Retourne 1 si le combattant esquive l’attaque, sinon 0
 int esquive(Combattant *c) {
     int agi = c->agilite;
 
-    // Si le personnage a un bonus d'agilité temporaire, on l’utilise à la place
+    // Si le personnage a un bonus d’agilité temporaire (ex: tech de Shadow)
     if (c->buff_agilite_tours > 0) {
-        agi = c->buff_agilite;
+        agi = 1;  // esquive garantie
     }
 
-    // Si agilité = 1, esquive garantie
+    // Si agilité effective = 1 ou moins, esquive garantie
     if (agi <= 1) {
         return 1;
     }
 
-    // Tirage aléatoire entre 1 et agilité
+    // Tirage entre 1 et agi
     int tirage = tirageAleatoire(1, agi);
-
-    // S'il tombe sur 1, c'est esquivé
-    if (tirage == 1) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return (tirage == 1);
 }
 
 
