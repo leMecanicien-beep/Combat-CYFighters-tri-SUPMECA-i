@@ -22,6 +22,9 @@ int main() {
     initialiserEquipe(&joueur, "Joueur 1");
     initialiserEquipe(&ia, "IA");
 
+    // Tableau pour marquer les combattants déjà pris
+    int pris[6] = {0}; // 0 = dispo, 1 = déjà pris
+
     printf("Choisissez 3 combattants pour votre équipe :\n");
 
     for (int i = 0; i < nbCombattants; i++) {
@@ -30,15 +33,23 @@ int main() {
     }
 
     for (int c = 0; c < 3; c++) {
-        int choix = demanderEntier("Votre choix : ", 0, nbCombattants - 1);
+        int choix;
+        do {
+            choix = demanderEntier("Votre choix : ", 0, nbCombattants - 1);
+            if (pris[choix]) {
+                printf("Ce combattant est déjà pris. Choisissez-en un autre.\n");
+            }
+        } while (pris[choix]);
+
         ajouterCombattant(&joueur, &tous[choix]);
-        tous[choix].pv = -1; // Marquer comme pris
+        pris[choix] = 1;
     }
 
-    // Donner les 3 restants à l’IA
+    // Donner les combattants non pris à l’IA
     for (int i = 0; i < nbCombattants; i++) {
-        if (tous[i].pv != -1 && ia.nbCombattants < 3) {
+        if (!pris[i] && ia.nbCombattants < 3) {
             ajouterCombattant(&ia, &tous[i]);
+            pris[i] = 1;
         }
     }
 
