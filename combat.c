@@ -21,9 +21,7 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
         return;
     }
 
-    // ============================
-    // TOXINE DU CHAOS (JOKER)
-    // ============================
+    // TOXINE DU CHAOS (JOKER) - poison tous les ennemis
     if (strcmp(t->nom, "Toxine du chaos") == 0) {
         for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
             Combattant* cible = equipeAdverse->combattants[i];
@@ -34,29 +32,43 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
             }
         }
 
-    // ============================
-    // COUP D'INFINI (THANOS)
-    // ============================
+    // COUP D'INFINI (THANOS) - dégâts directs à un ennemi
     } else if (strcmp(t->nom, "Coup d’infini") == 0) {
-        for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
-            Combattant* cible = equipeAdverse->combattants[i];
-            if (cible->pv > 0) {
-                appliquerDegats(cible, t->valeur);
-                break;  // une seule cible
+        int cibleChoisie = -1;
+
+        if (strcmp(equipeAlliee->nom, "IA") != 0) {
+            // Joueur humain → choisir une cible
+            printf("Choisissez une cible pour Coup d’infini :\n");
+            for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
+                if (equipeAdverse->combattants[i]->pv > 0) {
+                    printf("%d - ", i);
+                    afficherCombattant(equipeAdverse->combattants[i]);
+                }
+            }
+            do {
+                cibleChoisie = demanderEntier("Votre choix : ", 0, equipeAdverse->nbCombattants - 1);
+            } while (equipeAdverse->combattants[cibleChoisie]->pv <= 0);
+        } else {
+            // IA → choisit première cible vivante
+            for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
+                if (equipeAdverse->combattants[i]->pv > 0) {
+                    cibleChoisie = i;
+                    break;
+                }
             }
         }
 
-    // ============================
-    // MUR NOIR (ASTA)
-    // ============================
+        if (cibleChoisie != -1) {
+            appliquerDegats(equipeAdverse->combattants[cibleChoisie], t->valeur);
+        }
+
+    // MUR NOIR (ASTA) - boost défense perso
     } else if (strcmp(t->nom, "Mur noir") == 0) {
         attaquant->buff_defense = t->valeur;
         attaquant->buff_defense_tours = t->duree;
         printf("%s augmente sa défense de +%d%% pour %d tour(s) !\n", attaquant->nom, t->valeur, t->duree);
 
-    // ============================
-    // VOILE D'OMBRE (SHADOW)
-    // ============================
+    // VOILE D’OMBRE (SHADOW) - boost agilité de tous les alliés
     } else if (strcmp(t->nom, "Voile d’ombre") == 0) {
         for (int i = 0; i < equipeAlliee->nbCombattants; i++) {
             Combattant* cible = equipeAlliee->combattants[i];
@@ -67,22 +79,41 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
             }
         }
 
-    // ============================
-    // BENEDICTION OBSCURE (SHADE)
-    // ============================
+    // BENEDICTION OBSCURE (SHADE) - soin complet sur un allié
     } else if (strcmp(t->nom, "Bénédiction obscure") == 0) {
-        for (int i = 0; i < equipeAlliee->nbCombattants; i++) {
-            Combattant* cible = equipeAlliee->combattants[i];
-            if (cible->pv > 0 && cible->pv < cible->pv_max) {
-                cible->pv = cible->pv_max;
-                printf("%s est soigné totalement !\n", cible->nom);
-                break;  // une seule cible
+        int cibleChoisie = -1;
+
+        if (strcmp(equipeAlliee->nom, "IA") != 0) {
+            // Joueur humain → choisir un allié blessé
+            printf("Choisissez un allié à soigner :\n");
+            for (int i = 0; i < equipeAlliee->nbCombattants; i++) {
+                Combattant* c = equipeAlliee->combattants[i];
+                if (c->pv > 0 && c->pv < c->pv_max) {
+                    printf("%d - ", i);
+                    afficherCombattant(c);
+                }
+            }
+            do {
+                cibleChoisie = demanderEntier("Votre choix : ", 0, equipeAlliee->nbCombattants - 1);
+            } while (equipeAlliee->combattants[cibleChoisie]->pv <= 0 ||
+                     equipeAlliee->combattants[cibleChoisie]->pv == equipeAlliee->combattants[cibleChoisie]->pv_max);
+        } else {
+            // IA → soigne premier allié blessé
+            for (int i = 0; i < equipeAlliee->nbCombattants; i++) {
+                if (equipeAlliee->combattants[i]->pv > 0 &&
+                    equipeAlliee->combattants[i]->pv < equipeAlliee->combattants[i]->pv_max) {
+                    cibleChoisie = i;
+                    break;
+                }
             }
         }
 
-    // ============================
-    // KAMEHAMEHA PSYCHIQUE (GOKU)
-    // ============================
+        if (cibleChoisie != -1) {
+            equipeAlliee->combattants[cibleChoisie]->pv = equipeAlliee->combattants[cibleChoisie]->pv_max;
+            printf("%s est soigné totalement !\n", equipeAlliee->combattants[cibleChoisie]->nom);
+        }
+
+    // KAMEHAMEHA PSYCHIQUE (GOKU) - gel tous les ennemis
     } else if (strcmp(t->nom, "Kamehameha psychique") == 0) {
         for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
             Combattant* cible = equipeAdverse->combattants[i];
@@ -90,12 +121,11 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
                 cible->est_gele = 1;
                 cible->tours_gele = t->duree;
                 printf("%s est figé pendant %d tour(s) !\n", cible->nom, t->duree);
-                break;  // une seule cible
             }
         }
     }
 
-    // Réinitialise le cooldown
+    // Après utilisation, on active le cooldown
     t->cooldown_restant = t->cooldown;
 }
 
