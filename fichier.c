@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "fichier.h"
+#include "technique.h"
 
 // Fonction utilitaire : lire un champ jusqu’à un ';' ou fin de ligne
 void lireChamp(char* dest, const char* ligne, int* i) {
