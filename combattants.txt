@@ -1,0 +1,6 @@
+Shadow;1300;300;10;2;Voile d’ombre;0;1;5;Agilité de tous les alliés passe à 1 pendant 1 tour
+Joker;900;150;10;5;Toxine du chaos;100;3;6;Poison de 100 PV/tour sur tous les ennemis
+Shade;1300;250;20;4;Bénédiction obscure;0;0;7;Soigne totalement un allié ciblé
+Thanos;2000;250;40;10;Coup d’infini;500;0;4;Inflige 500 dégâts directs à un ennemi
+Goku;1600;400;30;2;Kamehameha psychique;0;1;6;Empêche un adversaire de jouer pendant 1 tour
+Asta;1100;300;30;3;Mur noir;30;2;3;Sa défense passe à +30% pendant 2 tours
