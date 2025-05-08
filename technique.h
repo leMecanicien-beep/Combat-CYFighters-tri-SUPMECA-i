@@ -11,4 +11,7 @@ typedef struct {
     char description[100];  // Description affichée au joueur
 } Technique;
 
+void initialiserTechnique(Technique *t, const char *nom, int valeur, int duree, int cooldown, const char *desc);
+void afficherTechnique(const Technique *t);
+
 #endif
