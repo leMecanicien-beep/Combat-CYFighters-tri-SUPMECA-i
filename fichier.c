@@ -14,6 +14,7 @@ void lireChamp(char* dest, const char* ligne, int* i) {
     dest[j] = '\0';
     if (ligne[*i] == ';') {
         (*i)++; // On saute la ponctuation
+    }
 }
 
 Combattant* chargerCombattants(const char* nomFichier, int* nb) {
