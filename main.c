@@ -5,6 +5,7 @@
 #include "equipe.h"
 #include "combat.h"
 #include "ia.h"
+#include <string.h>
 
 int main() {
     initialiserAleatoire();
@@ -19,7 +20,16 @@ int main() {
 
     // Créer deux équipes
     Equipe joueur, ia;
-    initialiserEquipe(&joueur, "Joueur 1");
+    char nomEquipe[30];
+    printf("Entrez le nom de votre équipe : ");
+    fgets(nomEquipe, sizeof(nomEquipe), stdin);
+
+    // Supprimer le saut de ligne si présent
+    size_t len = strlen(nomEquipe);
+    if (len > 0 && nomEquipe[len - 1] == '\n') {
+    nomEquipe[len - 1] = '\0';
+    }
+    initialiserEquipe(&joueur, nomEquipe);
     initialiserEquipe(&ia, "IA");
 
     // Tableau pour marquer les combattants déjà pris
