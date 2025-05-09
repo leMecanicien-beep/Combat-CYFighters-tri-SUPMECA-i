@@ -1,3 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "utilitaire.h"
+#include "fichier.h"
+#include "equipe.h"
+#include "combat.h"
+#include "ia.h"
+#include "combattant.h"
+
+
 int main() {
     initialiserAleatoire();
 
