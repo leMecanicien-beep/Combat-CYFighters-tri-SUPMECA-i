@@ -16,43 +16,40 @@ int main() {
     while (rejouer) {
         int nbCombattants;
         Combattant* tous = chargerCombattants("combattants.txt", &nbCombattants);
-
         if (tous == NULL || nbCombattants < 6) {
             printf("Erreur : chargement des combattants impossible.\n");
             return 1;
         }
 
-        // Saisie du nom de l'équipe joueur
         char nomEquipe[30];
-        printf("Entrez le nom de votre equipe : ");
+        printf("Entrez le nom de votre équipe : ");
         fgets(nomEquipe, sizeof(nomEquipe), stdin);
         size_t len = strlen(nomEquipe);
         if (len > 0 && nomEquipe[len - 1] == '\n') {
             nomEquipe[len - 1] = '\0';
         }
 
-        // Création des équipes
         Equipe joueur, ia;
         initialiserEquipe(&joueur, nomEquipe);
         initialiserEquipe(&ia, "IA");
 
-        int pris[nbCombattants];
-        for (int i = 0; i < nbCombattants; i++) pris[i] = 0;
+        int pris[10] = {0};
 
+        printf("\n--- Sélection des combattants ---\n");
         afficherChoixEquipe(tous, nbCombattants);
-
-        printf("Choisissez 3 combattants pour votre equipe :\n");
-        while (joueur.nbCombattants < 3) {
-            int choix = demanderEntier("Votre choix : ", 0, nbCombattants - 1);
-            if (!pris[choix]) {
-                ajouterCombattant(&joueur, &tous[choix]);
-                pris[choix] = 1;
-            } else {
-                printf("Ce combattant est deja pris.\n");
-            }
+        for (int i = 0; i < 3; i++) {
+            int choix;
+            do {
+                choix = demanderEntier("Votre choix : ", 0, nbCombattants - 1);
+                if (pris[choix]) {
+                    printf("Ce combattant est déjà pris.\n");
+                }
+            } while (pris[choix]);
+            ajouterCombattant(&joueur, &tous[choix]);
+            pris[choix] = 1;
         }
 
-        // Choix IA automatique
+        // Sélection IA
         for (int i = 0; i < nbCombattants && ia.nbCombattants < 3; i++) {
             if (!pris[i]) {
                 ajouterCombattant(&ia, &tous[i]);
@@ -60,24 +57,23 @@ int main() {
             }
         }
 
-        printf("\n--- Debut du combat ---\n");
+        printf("\n--- Début du combat ! ---\n");
 
-        int vainqueur = 0;
+        int tour = 1;
         while (!equipeEstKO(&joueur) && !equipeEstKO(&ia)) {
+            printf("\n===== TOUR %d =====\n", tour);
             afficherEquipesCoteACote(&joueur, &ia);
 
-            printf("\n--- Tour du Joueur ---\n");
-            jouerTourJoueur(&joueur, &ia);
-            if (equipeEstKO(&ia)) {
-                vainqueur = 1;
-                break;
+            for (int i = 0; i < joueur.nbCombattants; i++) {
+                if (joueur.combattants[i]->pv > 0) {
+                    while (!tourCombattant(joueur.combattants[i], &joueur, &ia, 0));
+                }
             }
 
-            printf("\n--- Tour de l'IA ---\n");
-            jouerTourIA(&ia, &joueur);
-            if (equipeEstKO(&joueur)) {
-                vainqueur = 2;
-                break;
+            for (int i = 0; i < ia.nbCombattants; i++) {
+                if (ia.combattants[i]->pv > 0) {
+                    while (!tourCombattant(ia.combattants[i], &ia, &joueur, 1));
+                }
             }
 
             for (int i = 0; i < joueur.nbCombattants; i++) {
@@ -86,20 +82,25 @@ int main() {
             for (int i = 0; i < ia.nbCombattants; i++) {
                 effetsFinTour(ia.combattants[i]);
             }
+
+            tour++;
         }
 
         printf("\n--- Fin du combat ---\n");
-        if (vainqueur == 1) printf("Victoire de %s !\n", joueur.nom);
-        else if (vainqueur == 2) printf("Victoire de l'IA !\n");
-        else printf("Match nul ou erreur inconnue.\n");
+        if (equipeEstKO(&joueur)) {
+            printf("L'IA remporte le combat.\n");
+        } else {
+            printf("Bravo, vous avez gagné le combat !\n");
+        }
 
         free(tous);
 
-        printf("\nSouhaitez-vous rejouer ? (1 = Oui, 0 = Non) : ");
+        printf("Voulez-vous rejouer ? (1 = Oui, 0 = Non) : ");
         scanf("%d", &rejouer);
-        while (getchar() != '\n'); // vide le buffer
+        while (getchar() != '\n'); // vider le buffer
     }
 
-    printf("Merci d'avoir joue ! A bientot.\n");
+    printf("Merci d'avoir joué !\n");
     return 0;
 }
+
