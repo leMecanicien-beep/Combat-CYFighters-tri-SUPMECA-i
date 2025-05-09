@@ -10,7 +10,7 @@ void attaquer(Combattant* attaquant, Combattant* cible);
 void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equipeAdverse);
 
 // Fait jouer un tour complet à un joueur humain
-int tourCombattant(Combattant* c, Equipe* equipeJoueur, Equipe* equipeAdverse);
+int tourCombattant(Combattant* c, Equipe* equipeJoueur, Equipe* equipeAdverse, int estIA);
 
 void effetsFinTour(Combattant* c);
 
