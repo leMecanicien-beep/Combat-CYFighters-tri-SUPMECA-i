@@ -2,6 +2,7 @@
 #include <string.h>
 #include "affichage.h"
 #include "combattant.h"
+#include "technique.h"
 
 void genererBarrePV(int pv, int pv_max, char* sortie) {
     int nb = (pv * 10) / pv_max;
@@ -11,10 +12,10 @@ void genererBarrePV(int pv, int pv_max, char* sortie) {
     sortie[10] = '\0';
 }
 
-void genererLigne(Combattant* c, char lignes[7][100]) {
+void genererLigne(Combattant* c, char lignes[8][120]) {
     if (c == NULL || c->pv <= 0) {
-        for (int i = 0; i < 7; i++) {
-            strcpy(lignes[i], "                ");
+        for (int i = 0; i < 8; i++) {
+            strcpy(lignes[i], "                    ");
         }
         return;
     }
@@ -22,18 +23,19 @@ void genererLigne(Combattant* c, char lignes[7][100]) {
     char barre[16];
     genererBarrePV(c->pv, c->pv_max, barre);
 
-    snprintf(lignes[0], 100, "+--------------+");
-    snprintf(lignes[1], 100, "| %-12s|", c->nom);
-    snprintf(lignes[2], 100, "| PV: [%-10s]|", barre);
-    snprintf(lignes[3], 100, "| ATK: %-6d |", c->attaque);
-    snprintf(lignes[4], 100, "| DEF: %-5d%% |", c->defense);
-    snprintf(lignes[5], 100, "| AGI: %-6d |", c->agilite);
-    snprintf(lignes[6], 100, "+--------------+");
+    snprintf(lignes[0], 120, "+------------------+");
+    snprintf(lignes[1], 120, "| %-16s|", c->nom);
+    snprintf(lignes[2], 120, "| PV: [%-10s] |", barre);
+    snprintf(lignes[3], 120, "| ATK: %-6d     |", c->attaque);
+    snprintf(lignes[4], 120, "| DEF: %-3d%%       |", c->defense);
+    snprintf(lignes[5], 120, "| AGI: %-6d     |", c->agilite);
+    snprintf(lignes[6], 120, "| TECH: %-9s |", c->technique.nom);
+    snprintf(lignes[7], 120, "+------------------+");
 }
 
 void afficherEquipesCoteACote(Equipe* gauche, Equipe* droite) {
-    char lignesG[3][7][100];
-    char lignesD[3][7][100];
+    char lignesG[3][8][120];
+    char lignesD[3][8][120];
 
     for (int i = 0; i < 3; i++) {
         genererLigne((i < gauche->nbCombattants) ? gauche->combattants[i] : NULL, lignesG[i]);
@@ -41,13 +43,13 @@ void afficherEquipesCoteACote(Equipe* gauche, Equipe* droite) {
     }
 
     printf("\n=== ETAT DES EQUIPES ===\n\n");
-    for (int ligne = 0; ligne < 7; ligne++) {
+    for (int ligne = 0; ligne < 8; ligne++) {
         for (int p = 0; p < 3; p++) {
-            printf("%-20s", lignesG[p][ligne]);
+            printf("%-22s", lignesG[p][ligne]);
         }
         printf("       ");
         for (int p = 0; p < 3; p++) {
-            printf("%-20s", lignesD[p][ligne]);
+            printf("%-22s", lignesD[p][ligne]);
         }
         printf("\n");
     }
@@ -76,16 +78,31 @@ void afficherEquipesCoteACote(Equipe* gauche, Equipe* droite) {
 }
 
 void afficherCarteCombattant(Combattant* c) {
-    char lignes[7][100];
+    char lignes[8][120];
     genererLigne(c, lignes);
-    for (int i = 0; i < 7; i++) printf("%s\n", lignes[i]);
+    for (int i = 0; i < 8; i++) printf("%s\n", lignes[i]);
+    printf("Description : %s\n", c->technique.description);
+    printf("Valeur: %d | Duree: %d | Cooldown: %d\n",
+           c->technique.valeur,
+           c->technique.duree,
+           c->technique.cooldown);
+    printf("-----------------------------\n");
 }
 
 void afficherChoixEquipe(Combattant* tous, int nb) {
-    printf("\n=== Choisissez 3 combattants pour votre équipe ===\n\n");
+    printf("\n=== Choisissez 3 combattants pour votre equipe ===\n\n");
     for (int i = 0; i < nb; i++) {
         printf("%d :\n", i);
         afficherCarteCombattant(&tous[i]);
-        printf("\n");
+    }
+}
+
+void afficherCartesCombat(Equipe* equipe) {
+    printf("\nVos combattants :\n\n");
+    for (int i = 0; i < equipe->nbCombattants; i++) {
+        if (equipe->combattants[i]->pv > 0) {
+            printf("%d :\n", i);
+            afficherCarteCombattant(equipe->combattants[i]);
+        }
     }
 }
