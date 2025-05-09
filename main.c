@@ -7,6 +7,7 @@
 #include "combat.h"
 #include "ia.h"
 #include "combattant.h"
+#include "affichage.h"
 
 
 int main() {
@@ -72,6 +73,9 @@ int main() {
         int vainqueur = 0;
 
         while (!equipeEstKO(&joueur) && !equipeEstKO(&ia)) {
+            printf("\n=== État des équipes ===\n");
+            afficherEquipesCoteACote(&joueur, &ia);
+
             printf("\n--- Tour du Joueur ---\n");
             jouerTourJoueur(&joueur, &ia);
 
