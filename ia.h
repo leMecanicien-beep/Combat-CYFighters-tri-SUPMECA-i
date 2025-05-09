@@ -3,7 +3,6 @@
 
 #include "equipe.h"
 
-// L’IA joue son tour : elle choisit un combattant, une action, et une cible
-void jouerTourIA(Equipe* equipeIA, Equipe* equipeAdverse);
+void jouerTourIA(Equipe* ia, Equipe* joueur);
 
 #endif
