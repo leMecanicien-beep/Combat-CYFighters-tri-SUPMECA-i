@@ -13,4 +13,6 @@ int demanderEntier(const char* message, int min, int max);
 // Pause (attente d’entrée)
 void pause();
 
+int esquive(struct Combattant* c);
+
 #endif
