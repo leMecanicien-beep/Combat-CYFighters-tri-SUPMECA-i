@@ -15,7 +15,7 @@ void jouerTourIA(Equipe* ia, Equipe* joueur) {
         // Si la technique est disponible, l'utiliser aléatoirement 50% des cas
         if (c->cooldown_actuel == 0 && tirageAleatoire(1, 2) == 1) {
             printf("%s utilise sa technique speciale : %s !\n", c->nom, c->technique.nom);
-            utiliserTechnique(c, joueur);
+            utiliserTechnique(c, ia, joueur);
         } else {
             // Choisir une cible vivante
             int cibleIndex = -1;
