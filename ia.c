@@ -1,38 +1,36 @@
 #include <stdio.h>
 #include "ia.h"
-#include "affichage.h"
 #include "combat.h"
 #include "utilitaire.h"
 
-void jouerTourIA(Equipe* ia, Equipe* joueur) {
-    printf("\n--- Tour de l'IA ---\n");
-    afficherCartesCombat(ia);
-
-    for (int i = 0; i < ia->nbCombattants; i++) {
-        Combattant* c = ia->combattants[i];
-        if (c->pv <= 0) continue;
-
-        // Si la technique est disponible, l'utiliser aléatoirement 50% des cas
-        if (c->cooldown_actuel == 0 && tirageAleatoire(1, 2) == 1) {
-            printf("%s utilise sa technique speciale : %s !\n", c->nom, c->technique.nom);
-            utiliserTechnique(c, ia, joueur);
-        } else {
-            // Choisir une cible vivante
-            int cibleIndex = -1;
-            for (int j = 0; j < joueur->nbCombattants; j++) {
-                if (joueur->combattants[j]->pv > 0) {
-                    cibleIndex = j;
-                    break;
-                }
-            }
-            if (cibleIndex != -1) {
-                printf("%s attaque %s !\n", c->nom, joueur->combattants[cibleIndex]->nom);
-                attaquer(c, joueur->combattants[cibleIndex]);
-            }
+// L’IA choisit une action simple pour le premier perso vivant de l’équipe
+void jouerTourIA(Equipe* equipeIA, Equipe* equipeAdverse) {
+    // Cherche le premier combattant vivant
+    Combattant* attaquant = NULL;
+    for (int i = 0; i < equipeIA->nbCombattants; i++) {
+        if (equipeIA->combattants[i]->pv > 0) {
+            attaquant = equipeIA->combattants[i];
+            break;
         }
+    }
 
-        if (c->cooldown_actuel > 0) {
-            c->cooldown_actuel--;
+    if (!attaquant) return; // Aucun combattant disponible
+
+    // Cherche une cible adverse vivante au hasard
+    Combattant* cible = NULL;
+    while (!cible) {
+        int r = tirageAleatoire(0, equipeAdverse->nbCombattants - 1);
+        if (equipeAdverse->combattants[r]->pv > 0) {
+            cible = equipeAdverse->combattants[r];
         }
+    }
+
+    // Si la technique est prête, 50% de chances de l’utiliser
+    if (attaquant->technique.cooldown_restant == 0 && tirageAleatoire(1, 2) == 1) {
+        printf("[IA] %s utilise sa technique spéciale !\n", attaquant->nom);
+        utiliserTechnique(attaquant, equipeIA, equipeAdverse);  // Fonction dans combat.c
+    } else {
+        printf("[IA] %s attaque %s !\n", attaquant->nom, cible->nom);
+        attaquer(attaquant, cible);  // Fonction dans combat.c
     }
 }

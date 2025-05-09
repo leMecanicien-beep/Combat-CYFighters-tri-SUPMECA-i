@@ -22,6 +22,7 @@ int main() {
             return 1;
         }
 
+        // Saisie du nom de l'équipe joueur
         char nomEquipe[30];
         printf("Entrez le nom de votre equipe : ");
         fgets(nomEquipe, sizeof(nomEquipe), stdin);
@@ -30,6 +31,7 @@ int main() {
             nomEquipe[len - 1] = '\0';
         }
 
+        // Création des équipes
         Equipe joueur, ia;
         initialiserEquipe(&joueur, nomEquipe);
         initialiserEquipe(&ia, "IA");
@@ -50,6 +52,7 @@ int main() {
             }
         }
 
+        // Choix IA automatique
         for (int i = 0; i < nbCombattants && ia.nbCombattants < 3; i++) {
             if (!pris[i]) {
                 ajouterCombattant(&ia, &tous[i]);
@@ -70,16 +73,19 @@ int main() {
                 break;
             }
 
+            printf("\n--- Tour de l'IA ---\n");
             jouerTourIA(&ia, &joueur);
             if (equipeEstKO(&joueur)) {
                 vainqueur = 2;
                 break;
             }
 
-            for (int i = 0; i < joueur.nbCombattants; i++)
+            for (int i = 0; i < joueur.nbCombattants; i++) {
                 effetsFinTour(joueur.combattants[i]);
-            for (int i = 0; i < ia.nbCombattants; i++)
+            }
+            for (int i = 0; i < ia.nbCombattants; i++) {
                 effetsFinTour(ia.combattants[i]);
+            }
         }
 
         printf("\n--- Fin du combat ---\n");
@@ -91,7 +97,7 @@ int main() {
 
         printf("\nSouhaitez-vous rejouer ? (1 = Oui, 0 = Non) : ");
         scanf("%d", &rejouer);
-        while (getchar() != '\n');
+        while (getchar() != '\n'); // vide le buffer
     }
 
     printf("Merci d'avoir joue ! A bientot.\n");
