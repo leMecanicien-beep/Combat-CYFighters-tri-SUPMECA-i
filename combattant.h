@@ -13,6 +13,7 @@ typedef struct {
     int agilite;            // Agilité (1 = esquive garantie, 2 = 1 chance sur 2, etc.)
 
     Technique technique;    // Sa technique spéciale
+    int cooldown_actuel;
 
     // Effets temporaires :
     int poison_tours;       // Nombre de tours de poison restants
