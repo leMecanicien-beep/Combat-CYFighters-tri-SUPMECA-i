@@ -1,5 +1,6 @@
 #ifndef UTILITAIRE_H
 #define UTILITAIRE_H
+#include "combattant.h"
 
 // Initialise le générateur de nombres aléatoires
 void initialiserAleatoire();
@@ -13,6 +14,6 @@ int demanderEntier(const char* message, int min, int max);
 // Pause (attente d’entrée)
 void pause();
 
-int esquive(struct Combattant* c);
+int esquive(Combattant* c);
 
 #endif
