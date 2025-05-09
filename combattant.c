@@ -24,8 +24,7 @@ int esquive(Combattant *c) {
     }
 
     // Tirage entre 1 et agi
-    int tirage = tirageAleatoire(1, agi);
-    return (tirage == 1);
+    return (tirageAleatoire(1, agi) == 1);
 }
 
 
