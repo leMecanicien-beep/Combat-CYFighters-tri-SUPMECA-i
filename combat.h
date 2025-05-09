@@ -12,4 +12,6 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
 // Fait jouer un tour complet à un joueur humain
 void jouerTourJoueur(Equipe* equipeJoueur, Equipe* equipeAdverse);
 
+void effetsFinTour(Combattant* c);
+
 #endif
