@@ -76,41 +76,60 @@ void utiliserTechnique(Combattant* c, Equipe* equipeAlliee, Equipe* equipeAdvers
     t->cooldown_restant = t->cooldown;
 }
 
-void tourCombattant(Combattant* c, Equipe* equipeAlliee, Equipe* equipeAdverse) {
-    if (c->pv <= 0) return;
-    if (c->est_gele) {
-        printf("%s est gelé et ne peut pas jouer ce tour.\n", c->nom);
-        return;
+int tourCombattant(Combattant* c, Equipe* equipeJoueur, Equipe* equipeAdverse, int estIA) {
+    if (c->pv <= 0 || c->est_gele) {
+        if (c->est_gele) {
+            printf("%s est gelé et ne peut pas jouer ce tour.\n", c->nom);
+        }
+        pause();
+        return 1;  // tour terminé même si aucune action
     }
-
-    effetsDebutTour(c);
-    if (c->pv <= 0) return;
 
     int choixAction;
-    do {
-        printf("Que voulez-vous faire avec %s ?\n", c->nom);
-        printf("1 - Attaquer\n");
-        printf("2 - Utiliser la technique spéciale (%s) [%d tour(s) de recharge]\n", c->technique.nom, c->technique.cooldown_restant);
-        choixAction = demanderEntier("Votre choix : ", 1, 2);
 
-        if (choixAction == 2 && c->technique.cooldown_restant > 0) {
-            printf("La technique de %s n’est pas encore prête (%d tour(s) restant(s)).\n", c->nom, c->technique.cooldown_restant);
-            choixAction = 0; // force à redemander une action
-        }
-    } while (choixAction != 1 && choixAction != 2);
+    if (!estIA) {
+        printf("\nQue voulez-vous faire avec %s ?\n", c->nom);
+        printf("1 - Attaquer\n");
+        printf("2 - Utiliser la technique spéciale (%s) [%d tour(s) de recharge]\n",
+               c->technique.nom, c->technique.cooldown_restant);
+        choixAction = demanderEntier("Votre choix : ", 1, 2);
+    } else {
+        choixAction = (tirageAleatoire(1, 3) == 1 && c->technique.cooldown_restant == 0) ? 2 : 1;
+    }
 
     if (choixAction == 1) {
-        printf("Cibles disponibles :\n");
+        // Attaque normale
+        printf(estIA ? "[IA] " : "");
+        printf("%s attaque !\n", c->nom);
+
+        // Affiche les cibles possibles
         for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
-            Combattant* cible = equipeAdverse->combattants[i];
-            if (cible->pv > 0) {
-                printf("%d - %s (PV: %d/%d | ATQ: %d | DEF: %d%% | AGI: %d)\n", i, cible->nom, cible->pv, cible->pv_max, cible->attaque, cible->defense, cible->agilite);
-                afficherTechnique(&cible->technique);
+            if (equipeAdverse->combattants[i]->pv > 0) {
+                printf("%d - %s\n", i, equipeAdverse->combattants[i]->nom);
             }
         }
-        int cible = demanderEntier("Quelle cible voulez-vous attaquer ? ", 0, equipeAdverse->nbCombattants - 1);
-        attaquer(c, equipeAdverse->combattants[cible]);
-    } else {
-        utiliserTechnique(c, equipeAlliee, equipeAdverse);
+
+        int cibleIndex;
+        if (!estIA) {
+            cibleIndex = demanderEntier("Quelle cible voulez-vous attaquer ? ", 0, equipeAdverse->nbCombattants - 1);
+        } else {
+            do {
+                cibleIndex = tirageAleatoire(0, equipeAdverse->nbCombattants - 1);
+            } while (equipeAdverse->combattants[cibleIndex]->pv <= 0);
+        }
+
+        attaquer(c, equipeAdverse->combattants[cibleIndex]);
+        return 1;
     }
+
+    // Si le joueur ou l’IA choisit la technique spéciale
+    if (c->technique.cooldown_restant > 0) {
+        printf("La technique de %s n’est pas encore prête (%d tour(s) restant(s)).\n",
+               c->nom, c->technique.cooldown_restant);
+        if (!estIA) pause();
+        return 0; // Le joueur pourra refaire un choix
+    }
+
+    utiliserTechnique(c, equipeJoueur, equipeAdverse);
+    return 1;
 }
