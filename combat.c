@@ -131,37 +131,57 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
 
 
 void jouerTourJoueur(Equipe* equipeJoueur, Equipe* equipeAdverse) {
-    int i;
-    printf("Choisissez votre combattant :\n");
-    for (i = 0; i < equipeJoueur->nbCombattants; i++) {
+    printf("\nVos combattants :\n");
+
+    // Affiche uniquement les combattants vivants
+    for (int i = 0; i < equipeJoueur->nbCombattants; i++) {
         if (equipeJoueur->combattants[i]->pv > 0) {
             printf("%d - ", i);
             afficherCombattant(equipeJoueur->combattants[i]);
         }
     }
 
-    int choix = demanderEntier("Votre choix : ", 0, equipeJoueur->nbCombattants - 1);
-    Combattant* c = equipeJoueur->combattants[choix];
+    // Choix du combattant qui joue
+    int indexCombattant;
+    do {
+        indexCombattant = demanderEntier("Quel combattant voulez-vous utiliser ? ", 0, equipeJoueur->nbCombattants - 1);
+        if (equipeJoueur->combattants[indexCombattant]->pv <= 0) {
+            printf("Ce combattant est KO ! Choisissez-en un autre.\n");
+        }
+    } while (equipeJoueur->combattants[indexCombattant]->pv <= 0);
 
-    if (c->est_gele) {
-        printf("%s est gelé et ne peut pas jouer ce tour.\n", c->nom);
-        return;
+    Combattant* attaquant = equipeJoueur->combattants[indexCombattant];
+
+    // Choix : attaque normale ou technique
+    printf("\nQue voulez-vous faire avec %s ?\n", attaquant->nom);
+    printf("1 - Attaquer\n");
+    printf("2 - Utiliser la technique spéciale (%s) [%d tour(s) de recharge]\n",
+           attaquant->technique.nom, attaquant->technique.cooldown_restant);
+    int action = demanderEntier("Votre choix : ", 1, 2);
+
+    // Choix de la cible vivante
+    printf("\nCibles disponibles :\n");
+    for (int i = 0; i < equipeAdverse->nbCombattants; i++) {
+        if (equipeAdverse->combattants[i]->pv > 0) {
+            printf("%d - ", i);
+            afficherCombattant(equipeAdverse->combattants[i]);
+        }
     }
 
-    printf("1 - Attaquer\n2 - Utiliser technique spéciale\n");
-    int action = demanderEntier("Action : ", 1, 2);
-
-    if (action == 1) {
-        printf("Cible :\n");
-        for (i = 0; i < equipeAdverse->nbCombattants; i++) {
-            if (equipeAdverse->combattants[i]->pv > 0) {
-                printf("%d - ", i);
-                afficherCombattant(equipeAdverse->combattants[i]);
-            }
+    int indexCible;
+    do {
+        indexCible = demanderEntier("Quelle cible voulez-vous attaquer ? ", 0, equipeAdverse->nbCombattants - 1);
+        if (equipeAdverse->combattants[indexCible]->pv <= 0) {
+            printf("Cette cible est déjà KO ! Choisissez-en une autre.\n");
         }
-        int cibleChoisie = demanderEntier("Votre cible : ", 0, equipeAdverse->nbCombattants - 1);
-        attaquer(c, equipeAdverse->combattants[cibleChoisie]);
+    } while (equipeAdverse->combattants[indexCible]->pv <= 0);
+
+    Combattant* cible = equipeAdverse->combattants[indexCible];
+
+    // Exécution de l’action
+    if (action == 1) {
+        attaquer(attaquant, cible);
     } else {
-        utiliserTechnique(c, equipeJoueur, equipeAdverse);
+        utiliserTechnique(attaquant, equipeJoueur, equipeAdverse);
     }
 }
