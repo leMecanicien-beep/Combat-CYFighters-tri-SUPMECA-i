@@ -9,7 +9,6 @@
 #include "combattant.h"
 #include "affichage.h"
 
-
 int main() {
     initialiserAleatoire();
 
@@ -25,7 +24,7 @@ int main() {
 
         // Saisie du nom de l'équipe joueur
         char nomEquipe[30];
-        printf("Entrez le nom de votre équipe : ");
+        printf("Entrez le nom de votre equipe : ");
         fgets(nomEquipe, sizeof(nomEquipe), stdin);
         size_t len = strlen(nomEquipe);
         if (len > 0 && nomEquipe[len - 1] == '\n') {
@@ -37,56 +36,45 @@ int main() {
         initialiserEquipe(&joueur, nomEquipe);
         initialiserEquipe(&ia, "IA");
 
-        int pris[6] = {0};
+        int pris[nbCombattants];
+        for (int i = 0; i < nbCombattants; i++) pris[i] = 0;
 
-        // Affichage des combattants disponibles
-        printf("\nChoisissez 3 combattants pour votre équipe :\n");
-        for (int i = 0; i < nbCombattants; i++) {
-            printf("%d - ", i);
-            afficherCombattant(&tous[i]);
+        afficherChoixEquipe(tous, nbCombattants);
+
+        printf("Choisissez 3 combattants pour votre equipe :\n");
+        while (joueur.nbCombattants < 3) {
+            int choix = demanderEntier("Votre choix : ", 0, nbCombattants - 1);
+            if (!pris[choix]) {
+                ajouterCombattant(&joueur, &tous[choix]);
+                pris[choix] = 1;
+            } else {
+                printf("Ce combattant est deja pris.\n");
+            }
         }
 
-        // Sélection du joueur
-        for (int c = 0; c < 3; c++) {
-            int choix;
-            do {
-                choix = demanderEntier("Votre choix : ", 0, nbCombattants - 1);
-                if (pris[choix]) {
-                    printf("Ce combattant est déjà pris. Choisissez-en un autre.\n");
-                }
-            } while (pris[choix]);
-
-            ajouterCombattant(&joueur, &tous[choix]);
-            pris[choix] = 1;
-        }
-
-        // Sélection IA
-        for (int i = 0; i < nbCombattants; i++) {
-            if (!pris[i] && ia.nbCombattants < 3) {
+        // Choix IA automatique
+        for (int i = 0; i < nbCombattants && ia.nbCombattants < 3; i++) {
+            if (!pris[i]) {
                 ajouterCombattant(&ia, &tous[i]);
                 pris[i] = 1;
             }
         }
 
-        printf("\n--- Début du combat ! ---\n");
+        printf("\n--- Debut du combat ---\n");
 
         int vainqueur = 0;
-
         while (!equipeEstKO(&joueur) && !equipeEstKO(&ia)) {
-            printf("\n=== État des équipes ===\n");
             afficherEquipesCoteACote(&joueur, &ia);
 
             printf("\n--- Tour du Joueur ---\n");
             jouerTourJoueur(&joueur, &ia);
-
             if (equipeEstKO(&ia)) {
                 vainqueur = 1;
                 break;
             }
 
-            printf("\n--- Tour de l’IA ---\n");
+            printf("\n--- Tour de l'IA ---\n");
             jouerTourIA(&ia, &joueur);
-
             if (equipeEstKO(&joueur)) {
                 vainqueur = 2;
                 break;
@@ -101,14 +89,9 @@ int main() {
         }
 
         printf("\n--- Fin du combat ---\n");
-
-        if (vainqueur == 1) {
-            printf("🎉 Vous avez gagné !\n");
-        } else if (vainqueur == 2) {
-            printf("🤖 L’IA a gagné !\n");
-        } else {
-            printf("Match nul ou erreur inattendue.\n");
-        }
+        if (vainqueur == 1) printf("Victoire de %s !\n", joueur.nom);
+        else if (vainqueur == 2) printf("Victoire de l'IA !\n");
+        else printf("Match nul ou erreur inconnue.\n");
 
         free(tous);
 
@@ -117,6 +100,6 @@ int main() {
         while (getchar() != '\n'); // vide le buffer
     }
 
-    printf("Merci d’avoir joué ! À bientôt.\n");
+    printf("Merci d'avoir joue ! A bientot.\n");
     return 0;
 }
