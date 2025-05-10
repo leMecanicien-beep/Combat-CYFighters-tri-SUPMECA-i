@@ -90,7 +90,7 @@ int main() {
         }
 
         printf("\n--- Fin du combat ---\n");
-        if (vainqueur == 1) printf("Victoire de %s !\n", joueur.nom);
+        if (vainqueur == 1) printf("Victoire de %s !\n", nomEquipe);
         else if (vainqueur == 2) printf("Victoire de l'IA !\n");
         else printf("Match nul ou erreur inconnue.\n");
 
