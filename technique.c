@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "technique.h"
+#include <stdlib.h>
 
 void initialiserTechnique(Technique *t, const char *nom, int valeur, int duree, int cooldown, const char *desc) {
     if(t == NULL || nom == NULL || desc == NULL){
