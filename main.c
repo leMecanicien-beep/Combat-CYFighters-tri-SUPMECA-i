@@ -73,9 +73,23 @@ int main() {
                 vainqueur = 1;
                 break;
             }
+            
+            int tousGeles = 1;
+            for (int i = 0; i < ia.nbCombattants; i++) {
+                if (!ia.combattants[i]->est_gele) {
+                tousGeles = 0;
+                break;
+                }
+            }
 
-            printf("\n--- Tour de l'IA ---\n");
-            jouerTourIA(&ia, &joueur);
+            if (!tousGeles) {
+                printf("\n--- Tour de l'IA ---\n");
+                jouerTourIA(&ia, &joueur);
+            } else {
+                printf("\n--- Tous les combattants IA sont gelés : tour sauté ---\n");
+            }
+
+
             if (equipeEstKO(&joueur)) {
                 vainqueur = 2;
                 break;
