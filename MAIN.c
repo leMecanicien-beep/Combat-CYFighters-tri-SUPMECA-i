@@ -10,5 +10,4 @@ int main() {
   printf("   Courage, l’honneur est dans l’effort !\n");
   printf("⚔️ Match nul ! Quelle bataille épique jusqu’à la fin. ⚔️\n");
   printf("========================================\n");
-  return 0;
 }
