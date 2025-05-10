@@ -103,10 +103,22 @@ int main() {
             }
         }
 
-        printf("\n--- Fin du combat ---\n");
-        if (vainqueur == 1) printf("Victoire de %s !\n", nomEquipe);
-        else if (vainqueur == 2) printf("Victoire de l'IA !\n");
-        else printf("Match nul ou erreur inconnue.\n");
+        printf("\n========================================\n");
+        printf("||           🔥 FIN DU COMBAT 🔥           ||\n");
+        printf("========================================\n");
+
+        if (vainqueur == 1) {
+            printf("🎉 Félicitations, l’équipe %s remporte la victoire ! 🎉\n", nomEquipe);
+            printf("   Vous avez vaincu l’équipe adverse avec honneur.\n");
+        } else if (vainqueur == 2) {
+            printf("💀 L’IA a triomphé ! Mieux vaut retenter votre chance... 💀\n");
+            printf("   Courage, l’honneur est dans l’effort !\n");
+        } else {
+            printf("⚔️ Match nul ! Quelle bataille épique jusqu’à la fin. ⚔️\n");
+        }
+
+        printf("========================================\n");
+
 
         free(tous);
 
