@@ -2,10 +2,11 @@
 #include "ia.h"
 #include "combat.h"
 #include "utilitaire.h"
+#include <stdlib.h>
 
 // L’IA choisit une action simple pour le premier perso vivant de l’équipe
 void jouerTourIA(Equipe* equipeIA, Equipe* equipeAdverse) {
-    if(equipeIA == NULL || equipeAdverse){
+    if(equipeIA == NULL || equipeAdverse == NULL){
         exit(190);
     }
     // Cherche le premier combattant vivant
