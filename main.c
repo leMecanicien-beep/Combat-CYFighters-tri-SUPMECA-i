@@ -10,6 +10,7 @@
 #include "affichage.h"
 
 int main() {
+    printf("Bienvenue dans un jeu où multiples univers s'affrontent, CY_Fighters\n");
     initialiserAleatoire();
 
     int rejouer = 1;
