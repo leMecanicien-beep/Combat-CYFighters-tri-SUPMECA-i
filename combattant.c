@@ -2,15 +2,22 @@
 #include "combattant.h"
 #include "utilitaire.h" // pour tirageAleatoire()
 #include "technique.h"
+#include <stdlib.h>
 
 // Affiche les informations d’un combattant
 void afficherCombattant(Combattant *c) {
+    if(c == NULL){
+        exit(80);
+    }
     printf("%s (PV: %d/%d | ATQ: %d | DEF: %d%% | AGI: %d)\n",
            c->nom, c->pv, c->pv_max, c->attaque, c->defense, c->agilite);
     afficherTechnique(&c->technique);  // On affiche aussi sa technique
 }
 
 int esquive(Combattant *c) {
+    if(c == NULL){
+        exit(90);
+    }
     int agi = c->agilite;
 
     // Si le personnage a un bonus d’agilité temporaire (ex: tech de Shadow)
@@ -30,6 +37,9 @@ int esquive(Combattant *c) {
 
 // Applique des dégâts à un combattant en tenant compte de sa défense
 void appliquerDegats(Combattant *cible, int degats) {
+    if(cible == NULL){
+        exit(100);
+    }
     int defense_totale = cible->defense + cible->buff_defense;
     if (defense_totale > 100) defense_totale = 100;
 
@@ -42,6 +52,9 @@ void appliquerDegats(Combattant *cible, int degats) {
 
 // Applique les effets de début de tour (poison, gel)
 void effetsDebutTour(Combattant *c) {
+    if(c == NULL){
+        exit(110);
+    }
     if (c->poison_tours > 0) {
         printf("%s subit %d dégâts de poison.\n", c->nom, c->poison_degats);
         c->pv -= c->poison_degats;
@@ -57,6 +70,9 @@ void effetsDebutTour(Combattant *c) {
 
 // Applique les effets de fin de tour (réduction des buffs)
 void effetsFinTour(Combattant *c) {
+    if(c == NULL){
+        exit(120);
+    }
     if (c->buff_defense_tours > 0) {
         c->buff_defense_tours--;
         if (c->buff_defense_tours == 0) {
