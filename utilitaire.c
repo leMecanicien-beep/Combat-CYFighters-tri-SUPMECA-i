@@ -15,6 +15,9 @@ int tirageAleatoire(int min, int max) {
 
 // Demande un entier entre min et max à l’utilisateur
 int demanderEntier(const char* message, int min, int max) {
+    if(message == NULL){
+        exit(220);
+    }
     int valeur;
     int resultat;
 
