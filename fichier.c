@@ -6,6 +6,9 @@
 
 // Fonction utilitaire : lire un champ jusqu’à un ';' ou fin de ligne
 void lireChamp(char* dest, const char* ligne, int* i) {
+    if(dest == NULL || ligne == NULL || i == NULL){
+        exit(160);
+    }
     int j = 0;
     while (ligne[*i] != ';' && ligne[*i] != '\0' && ligne[*i] != '\n') {
         dest[j++] = ligne[*i];
@@ -18,6 +21,9 @@ void lireChamp(char* dest, const char* ligne, int* i) {
 }
 
 Combattant* chargerCombattants(const char* nomFichier, int* nb) {
+    if(nomFichier == NULL || nb == NULL){
+        exit(170);
+    }
     FILE* f = fopen(nomFichier, "r");
     if (f==NULL) {
         printf("Erreur : impossible d’ouvrir le fichier %s\n", nomFichier);
@@ -25,6 +31,9 @@ Combattant* chargerCombattants(const char* nomFichier, int* nb) {
     }
 
     Combattant* tab = malloc(6 * sizeof(Combattant));  // on sait qu’il y en a 6
+    if(tab == NULL){
+        exit(180);
+    }
     char ligne[300];
     *nb = 0;
 
