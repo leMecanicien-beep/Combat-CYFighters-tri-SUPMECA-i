@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "equipe.h"
+#include <stdlib.h>
 
 // Initialise une équipe avec un nom
 void initialiserEquipe(Equipe *e, const char *nom) {
