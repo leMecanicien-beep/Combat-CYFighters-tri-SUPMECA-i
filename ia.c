@@ -5,6 +5,9 @@
 
 // L’IA choisit une action simple pour le premier perso vivant de l’équipe
 void jouerTourIA(Equipe* equipeIA, Equipe* equipeAdverse) {
+    if(equipeIA == NULL || equipeAdverse){
+        exit(190);
+    }
     // Cherche le premier combattant vivant
     Combattant* attaquant = NULL;
     for (int i = 0; i < equipeIA->nbCombattants; i++) {
