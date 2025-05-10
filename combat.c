@@ -119,7 +119,7 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
             Combattant* cible = equipeAdverse->combattants[i];
             if (cible->pv > 0) {
                 cible->est_gele = 1;
-                cible->tours_gele = 2;
+                cible->tours_gele = t->duree;
                 printf("%s est figé pendant %d tour(s) !\n", cible->nom, t->duree);
             }
         }
