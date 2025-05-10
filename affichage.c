@@ -1,9 +1,13 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "affichage.h"
 #include "combattant.h"
 
 void genererBarrePV(int pv, int pv_max, char* sortie) {
+    if(sortie == NULL){
+        exit(10);
+    }
     int nb = (pv * 10) / pv_max;
     for (int i = 0; i < 10; i++) {
         sortie[i] = (i < nb) ? '#' : '.';
@@ -32,6 +36,9 @@ void genererLigne(Combattant* c, char lignes[7][100]) {
 }
 
 void afficherEquipesCoteACote(Equipe* gauche, Equipe* droite) {
+    if(gauche == NULL || droite == NULL){
+        exit(20);
+    }
     char lignesG[3][7][100];
     char lignesD[3][7][100];
 
@@ -76,12 +83,18 @@ void afficherEquipesCoteACote(Equipe* gauche, Equipe* droite) {
 }
 
 void afficherCarteCombattant(Combattant* c) {
+    if(c == NULL){
+        exit(30);
+    }
     char lignes[7][100];
     genererLigne(c, lignes);
     for (int i = 0; i < 7; i++) printf("%s\n", lignes[i]);
 }
 
 void afficherChoixEquipe(Combattant* tous, int nb) {
+    if(tous == NULL){
+        exit(40);
+    }
     printf("\n=== Choisissez 3 combattants pour votre équipe ===\n\n");
     for (int i = 0; i < nb; i++) {
         printf("%d :\n", i);
