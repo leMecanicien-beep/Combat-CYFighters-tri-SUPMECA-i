@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "combat.h"
 #include "utilitaire.h"
 
 // Applique une attaque classique
 void attaquer(Combattant* attaquant, Combattant* cible) {
+    if(attaquant == NULL || cible == NULL){
+        exit(50);
+    }
     printf("%s attaque %s !\n", attaquant->nom, cible->nom);
     if (esquive(cible)) {
         printf("%s esquive l’attaque !\n", cible->nom);
@@ -14,6 +18,9 @@ void attaquer(Combattant* attaquant, Combattant* cible) {
 }
 
 void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equipeAdverse) {
+    if(attaquant == NULL || equipeAlliee == NULL || equipeAdverse == NULL){
+        exit(60);
+    }
     Technique* t = &attaquant->technique;
 
     if (t->cooldown_restant > 0) {
@@ -132,6 +139,9 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
 
 
 void jouerTourJoueur(Equipe* equipeJoueur, Equipe* equipeAdverse) {
+    if(equipeJoueur == NULL || equipeAdverse == NULL){
+        exit(70);
+    }
     printf("\nVos combattants :\n");
 
     // Affiche uniquement les combattants vivants
