@@ -4,6 +4,8 @@
 
 // Initialise une équipe avec un nom
 void initialiserEquipe(Equipe *e, const char *nom) {
+    if(e == NULL || nom == NULL){
+        
     strncpy(e->nom, nom, 29);
     e->nom[29] = '\0';
     e->nbCombattants = 0;
