@@ -16,6 +16,11 @@ void jouerTourIA(Equipe* equipeIA, Equipe* equipeAdverse) {
 
     if (!attaquant) return; // Aucun combattant disponible
 
+    if (attaquant->est_gele) {
+        printf("[IA] %s est gelé et ne peut pas jouer ce tour.\n", attaquant->nom);
+        return;
+    }
+
     // Cherche une cible adverse vivante au hasard
     Combattant* cible = NULL;
     while (!cible) {
