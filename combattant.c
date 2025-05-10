@@ -74,4 +74,11 @@ void effetsFinTour(Combattant *c) {
     if (c->technique.cooldown_restant > 0) {
         c->technique.cooldown_restant--;
     }
+
+    if (c->tours_gele > 0) {
+    c->tours_gele--;
+        if (c->tours_gele == 0) {
+        c->est_gele = 0;
+        }
+    }
 }
