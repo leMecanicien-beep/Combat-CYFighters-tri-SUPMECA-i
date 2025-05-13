@@ -50,7 +50,12 @@ Combattant* chargerCombattants(const char* nomFichier, int* nb) {
         lireChamp(champ, ligne, &i);                      // nom technique
         char nomTech[50]; strcpy(nomTech, champ);
         lireChamp(champ, ligne, &i);                      // valeur (vide possible)
-        int valeur = (champ[0] == '\0') ? 0 : atoi(champ);
+        int valeur;
+        if(champ[0] == '\0') {
+            valeur = 0;
+        } else {
+            valeur = atoi(champ);
+        }
         lireChamp(champ, ligne, &i); int duree = atoi(champ);
         lireChamp(champ, ligne, &i); int cooldown = atoi(champ);
         lireChamp(champ, ligne, &i);                      // description
