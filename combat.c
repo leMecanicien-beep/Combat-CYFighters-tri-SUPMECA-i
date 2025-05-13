@@ -36,7 +36,7 @@ void utiliserTechnique(Combattant* attaquant, Equipe* equipeAlliee, Equipe* equi
                 cible->poison_tours = t->duree;
                 cible->poison_degats = t->valeur;
                 cible->pv = cible->pv - (t->valeur * 3) ;
-                printf("%s est empoisonné pour %d tour(s) !\n", cible->nom, t->duree);
+                printf("%s est empoisonné !\n", cible->nom);
             }
         }
 
