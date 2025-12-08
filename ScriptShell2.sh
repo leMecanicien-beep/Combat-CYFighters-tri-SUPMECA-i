@@ -52,27 +52,72 @@ elif [ "$mode" = "real" ]; then
 
 fi
 
-############################################
-# SIMULATION du programme C
-############################################
-# (juste pour tester le gnuplot)
-cp "$filtered" "$outfile"
+if [ "$mode" = "max" ]; then
 
-############################################
-# GENERATION PNG
-############################################
-image="${outfile%.dat}.png"
+        echo "Préparation des tris pour histo max..."
 
-gnuplot <<EOF
+        # tri croissant (petites usines)
+        sort -t';' -k2,2n "$outfile" > filtres/tri_croissant.txt
+
+        # tri décroissant (grandes usines)
+        sort -t';' -k2,2nr "$outfile" > filtres/tri_decroissant.txt
+
+        # 50 plus petites
+        head -n 50 filtres/tri_croissant.txt > filtres/top50_small.txt
+
+        # 10 plus grandes
+        head -n 10 filtres/tri_decroissant.txt > filtres/top10_big.txt
+
+        # Image pour les 50 plus petites
+        gnuplot <<EOF
+set terminal png size 1280,720
+set output "vol_max_small.png"
+set datafile separator ";"
+set title "50 plus petites usines"
+set xlabel "Usines"
+set ylabel "Capacité (k.m3/an)"
+set xtics rotate by -45
+plot "filtres/top50_small.txt" using 2:xtic(1) with boxes title "petites"
+EOF
+
+        echo "Image créée : vol_max_small.png"
+
+        # Image pour les 10 plus grandes
+        gnuplot <<EOF
+set terminal png size 1280,720
+set output "vol_max_big.png"
+set datafile separator ";"
+set title "10 plus grandes usines"
+set xlabel "Usines"
+set ylabel "Capacité (k.m3/an)"
+set xtics rotate by -45
+plot "filtres/top10_big.txt" using 2:xtic(1) with boxes title "grandes"
+EOF
+
+        echo "Image créée : vol_max_big.png"
+
+    else
+
+        ###########################################################
+        # IMAGE CLASSIQUE POUR SRC ET REAL
+        ###########################################################
+
+        image="${outfile%.dat}.png"
+
+        gnuplot <<EOF
 set terminal png size 1280,720
 set output "$image"
 set datafile separator ";"
 set title "Histogramme $mode"
 set xlabel "Usines"
-set ylabel "Volume (k.m3.year-1)"
+set ylabel "Volume (k.m3/an)"
 set xtics rotate by -45
 plot "$outfile" using 2:xtic(1) with boxes title "$mode"
 EOF
 
-echo "Image créée : $image"
+        echo "Image créée : $image"
+
+    fi
+
+    ;;
 
