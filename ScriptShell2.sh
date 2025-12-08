@@ -1,123 +1,104 @@
 #!/bin/bash
 
-# Vérification arguments
-if [ $# -ne 3 ]; then
-    echo "Usage : $0 histo <max|src|real> <fichier.dat>"
-    exit 1
+############################################
+#Début du chronomètre
+############################################
+
+debut=$(date +%s)
+
+############################################
+#Vérif nbr arguments
+############################################
+
+
+if [ $# -lt 1 ] || [ $# -gt 3 ]
+then
+	echo "Nombre d'arguments incorrect"
+	exit 1
 fi
 
-mode="$2"
-DATAFILE="$3"
 
-# Vérifier fichier .dat
-if [ ! -f "$DATAFILE" ]; then
-    echo "Le fichier '$DATAFILE' est introuvable."
-    exit 2
+############################################
+#Valeur tmp existence usine
+############################################
+
+exist=1
+DAT="$3"
+if [ ! -f "$DAT" ]
+then
+	echo "Problème dans la récupération du fichier '$DAT' "
+	exit 23
 fi
 
-# Vérification mode
+############################################
+#Différents cas selon argument
+############################################
+
+
+if [ $# -ne 3 ]
+then
+    echo "Il manque l'argument "
+	exit 6
+fi
+		
+mode=$2
+		
 case $mode in
     max | src | real)
-        echo "Histogramme demandé : $mode"
-        ;;
+        echo "Mode histogramme : $mode"
     *)
-        echo "Mode histo invalide : $mode"
-        exit 3
-        ;;
+        echo "Argument incorrect : $mode"
+        exit 11
 esac
 
-mkdir -p filtres
+###############################################
+# Filtrage du CSV selon le mode choisi
+###############################################
+mkdir -p histoTout
 
-############################################
-# FILTRAGE
-############################################
+if [ "$mode" = "max" ]
+then
+    echo "Filtrage des capacités maximales...."
+	# On extrait seulement les lignes décrivant les usines
+	awk -F';' '$4 != "-" && $3 == "-" { print $2 ";" $4 }' "$DAT" > histoTout/histo_max.txt
+	fichier_filtre="histoTout/histo_max.txt"
+	fichier_c="vol_max.dat"
+    echo "Tri des usines pour histo max..."
 
-if [ "$mode" = "max" ]; then
+    # Tri en ordre décroissant (plus grandes → plus petites)
+    sort -t';' -k2,2nr "$fichier_c" > histoTout/tri_decroissant.txt
 
-    awk -F';' '$4 != "-" && $3 == "-" { print $2 ";" $4 }' "$DATAFILE" > filtres/histo_max.txt
-    filtered="filtres/histo_max.txt"
-    outfile="vol_max.dat"
+    head -n 10 histoTout/tri_decroissant.txt > histoTout/top10_grand.txt
+    tail -n 50 histoTout/tri_decroissant.txt > histoTout/top50_petit.txt
 
-elif [ "$mode" = "src" ]; then
-
-    awk -F';' '$1 == "-" && $4 != "-" { print $2 ";" $3 ";" $4 }' "$DATAFILE" > filtres/histo_src.txt
-    filtered="filtres/histo_src.txt"
-    outfile="vol_src.dat"
-
-elif [ "$mode" = "real" ]; then
-
-    awk -F';' '$1 == "-" && $4 != "-" { print $2 ";" $3 ";" $4 ";" $5 }' "$DATAFILE" > filtres/histo_real.txt
-    filtered="filtres/histo_real.txt"
-    outfile="vol_real.dat"
-
-fi
-
-if [ "$mode" = "max" ]; then
-
-        echo "Préparation des tris pour histo max..."
-
-        # tri croissant (petites usines)
-        sort -t';' -k2,2n "$outfile" > filtres/tri_croissant.txt
-
-        # tri décroissant (grandes usines)
-        sort -t';' -k2,2nr "$outfile" > filtres/tri_decroissant.txt
-
-        # 50 plus petites
-        head -n 50 filtres/tri_croissant.txt > filtres/top50_small.txt
-
-        # 10 plus grandes
-        head -n 10 filtres/tri_decroissant.txt > filtres/top10_big.txt
-
-        # Image pour les 50 plus petites
-        gnuplot <<EOF
-set terminal png size 1280,720
+    gnuplot <<EOF
+set terminal png size 1000,600
+set style data histograms
 set output "vol_max_small.png"
 set datafile separator ";"
 set title "50 plus petites usines"
+set style fill solid 0.8
+set boxwidth 0.5
 set xlabel "Usines"
-set ylabel "Capacité (k.m3/an)"
-set xtics rotate by -45
-plot "filtres/top50_small.txt" using 2:xtic(1) with boxes title "petites"
+set ylabel "Capacité (k.m3/year)"
+set xtics rotate by -45 font ',8'
+plot "histoTout/top50_petit.txt" using 2:xtic(1) with boxes title "petites"
 EOF
 
-        echo "Image créée : vol_max_small.png"
+    echo "Image vol_max_small.png créée"
 
-        # Image pour les 10 plus grandes
-        gnuplot <<EOF
-set terminal png size 1280,720
+    gnuplot <<EOF
+set terminal png size 1000,600
+set style data histograms
 set output "vol_max_big.png"
 set datafile separator ";"
 set title "10 plus grandes usines"
+set style fill solid 0.8
+set boxwidth 0.5
 set xlabel "Usines"
-set ylabel "Capacité (k.m3/an)"
-set xtics rotate by -45
-plot "filtres/top10_big.txt" using 2:xtic(1) with boxes title "grandes"
+set ylabel "Capacité (k.m3/year)"
+set xtics rotate by -45 font ',8'
+plot "histoTout/top10_grand.txt" using 2:xtic(1) with boxes title "grandes"
 EOF
 
-        echo "Image créée : vol_max_big.png"
-
-    else
-
-        ###########################################################
-        # IMAGE CLASSIQUE POUR SRC ET REAL
-        ###########################################################
-
-        image="${outfile%.dat}.png"
-
-        gnuplot <<EOF
-set terminal png size 1280,720
-set output "$image"
-set datafile separator ";"
-set title "Histogramme $mode"
-set xlabel "Usines"
-set ylabel "Volume (k.m3/an)"
-set xtics rotate by -45
-plot "$outfile" using 2:xtic(1) with boxes title "$mode"
-EOF
-
-        echo "Image créée : $image"
-
-    fi
-
-    ;;
-
+    echo "Image vol_max_big.png créée"
