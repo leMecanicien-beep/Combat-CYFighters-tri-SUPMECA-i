@@ -11,7 +11,8 @@ debut=$(date +%s)
 ############################################
 
 
-if [ $# -lt 1 ] || [ $# -gt 3 ] then
+if [ $# -lt 1 ] || [ $# -gt 3 ]
+then
 	echo "Nombre d'arguments incorrect"
 	exit 1
 fi
@@ -23,8 +24,9 @@ fi
 
 exist=1
 DAT="$3"
-if [ ! -f "$DAT" ] then
-	echo "Le fichier de données '$DAT' n'existe pas"
+if [ ! -f "$DAT" ]
+then
+	echo "Problème dans la récupération du fichier '$DAT' "
 	exit 23
 fi
 
@@ -36,7 +38,8 @@ fi
 case $1 in
 	"histo")
 		#vérifier deuxième argument existe
-		if [ $# -ne 3 ] then
+		if [ $# -ne 3 ]
+		then
 			echo "Il manque l'argument "
 			exit 6
 		fi
@@ -56,21 +59,24 @@ case $1 in
 	    ###############################################
     	mkdir -p histoTout
 
-    	if [ "$mode" = "max" ] then
+    	if [ "$mode" = "max" ]
+		then
         	echo "Filtrage des capacités maximales...."
 	        # On extrait seulement les lignes décrivant les usines
 	        awk -F';' '$4 != "-" && $3 == "-" { print $2 ";" $4 }' "$DAT" > histoTout/histo_max.txt
 	        fichier_filtre="histoTout/histo_max.txt"
 	        fichier_c="vol_max.dat"
 
-    	elif [ "$mode" = "src" ] then
+    	elif [ "$mode" = "src" ]
+		then
 	        echo "Filtrage des volumes captés par les sources..."
 	        # On extrait seulement les lignes SOURCE → USINE (Spring → Facility)
 	        awk -F';' '$1 == "-" && $4 != "-" { print $2 ";" $3 ";" $4 }' "$DAT" > histoTout/histo_src.txt
 	        fichier_filtre="histoTout/histo_src.txt"
 	        fichier_c="vol_src.dat"
 
-    	elif [ "$mode" = "real" ] then
+    	elif [ "$mode" = "real" ]
+		then
 	        echo "Filtrage des volumes réellement traités..."
 	        # Même chose que src mais on garde aussi les fuites (colonne 5)
 	        awk -F';' '$1 == "-" && $4 != "-" { print $2 ";" $3 ";" $4 ";" $5 }' "$DAT" > histoTout/histo_real.txt
@@ -87,7 +93,8 @@ case $1 in
 	    echo "Exécution du programme C..."
 	    ./prog histo "$mode" "$fichier_filtre" "$DAT" > "$fichier_c"
 	
-	    if [ $? -ne 0 ] then
+	    if [ $? -ne 0 ]
+		then
 	        echo "Erreur dans le programme C"
 	        exit 12
 	    fi
@@ -117,7 +124,8 @@ EOF
 
 	"leaks")
 	
-		if [ $# -ne 2 ] then
+		if [ $# -ne 2 ]
+		then
 			echo "Il manque l'identifiant de l'usine"
 			exit 38
 		fi
@@ -152,14 +160,15 @@ EOF
 		res=$(./prog leaks "$id" "$aval" "$DAT")
 		retour=$?
 
-		if [ $ret -ne 0 ] then
+		if [ $ret -ne 0 ]
+		then
 			echo "Erreur dans l'exécution du C"
 			exit 32
 		fi
 
 		echo "Le volume de fuite calculé pour cette usine est : $res"
 
-		#On ajoute la recherche effectuée dans le fichier de l'historique
+		#On ajoute dans le fichier de l'historique
 		echo "$id;$res" >> leaks.dat
 		echo "Résultat ajouté à l'historique"
 
