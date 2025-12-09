@@ -71,34 +71,34 @@ then
     head -n 10 histoTout/tri_decroissant.txt > histoTout/top10_grand.txt
     tail -n 50 histoTout/tri_decroissant.txt > histoTout/top50_petit.txt
 
-    gnuplot <<EOF
-set terminal png size 1000,600
-set style data histograms
-set output "vol_max_small.png"
-set datafile separator ";"
-set title "50 plus petites usines"
-set style fill solid 0.8
-set boxwidth 0.5
-set xlabel "Usines"
-set ylabel "Capacité (k.m3/year)"
-set xtics rotate by -45 font ',8'
-plot "histoTout/top50_petit.txt" using 2:xtic(1) with boxes title "petites"
-EOF
+    gnuplot -persist -e "
+set terminal png size 1000,600;
+set style data histograms;
+set output 'Histogramme_max_grandes.png';
+set title 'Histogramme des volumes des 10 plus grandes usines';
+set xlabel 'ID';
+set ylabel 'Volume d eau maximum';
+set style fill solid 1.0;
+set boxwidth 0.8;
+set xtics rotate by -45 font ',8';
+set datafile separator ';';
+plot 'top10_grand.txt' using 2:xtic(1) title 'Valeur';
+"
 
     echo "Image vol_max_small.png créée"
 
-    gnuplot <<EOF
-set terminal png size 1000,600
-set style data histograms
-set output "vol_max_big.png"
-set datafile separator ";"
-set title "10 plus grandes usines"
-set style fill solid 0.8
-set boxwidth 0.5
-set xlabel "Usines"
-set ylabel "Capacité (k.m3/year)"
-set xtics rotate by -45 font ',8'
-plot "histoTout/top10_grand.txt" using 2:xtic(1) with boxes title "grandes"
-EOF
+    gnuplot -persist -e "
+set terminal png size 1000,600;
+set style data histograms;
+set output 'Histogramme_min_petites.png';
+set title 'Histogramme des volumes des 50 plus petites usines';
+set xlabel 'ID';
+set ylabel 'Volume d eau maximum';
+set style fill solid 1.0;
+set boxwidth 0.5;
+set xtics rotate by -45 font ',8';
+set datafile separator ';';
+plot 'top50_petit.txt' using 2:xtic(1) title 'Valeur';
+"
 
     echo "Image vol_max_big.png créée"
